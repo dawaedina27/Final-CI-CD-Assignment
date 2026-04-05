@@ -9,6 +9,7 @@ name: CI Pipeline
     branches: [master]
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   DOCKER_IMAGE: ${{ vars.DOCKER_IMAGE }}
 
 jobs:
