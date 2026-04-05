@@ -1,11 +1,7 @@
-const js = require("@eslint/js");
-
 module.exports = [
     {
         ignores:["eslint.config.js"]
     },
-    
-    js.configs.recommended,
     {
         files: ["**/*.js"],
         languageOptions: {
