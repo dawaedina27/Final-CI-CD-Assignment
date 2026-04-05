@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Greeting App</title>
+</head>
+<body>
+  <h1>Greeting App</h1>
+  <input id="name" placeholder="Enter your name" />
+  <button onclick="getGreeting()">Greet</button>
+  <p id="result"></p>
+
+  <script>
+    async function getGreeting() {
+      const name = document.getElementById('name').value;
+      const res = await fetch(`/api/greet?name=${name}`);
+      const data = await res.json();
+      document.getElementById('result').innerText = data.message;
+    }
+  </script>
+</body>
+</html>

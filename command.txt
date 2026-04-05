@@ -1,0 +1,2 @@
+docker build -t greeting-app .
+docker run -p 4000:4000 greeting-app
