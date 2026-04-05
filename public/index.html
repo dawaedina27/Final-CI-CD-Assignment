@@ -1,13 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Greeting App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Greeting App</h1>
-  <input id="name" placeholder="Enter your name" />
-  <button onclick="getGreeting()">Greet</button>
-  <p id="result"></p>
+  <main class="page">
+    <section class="card">
+      <p class="eyebrow">Say Hello</p>
+      <h1>Greeting App</h1>
+      <p class="subhead">Type a name and get an instant, friendly greeting.</p>
+
+      <div class="field">
+        <label for="name">Your name</label>
+        <input id="name" placeholder="Enter your name" />
+      </div>
+
+      <button class="cta" onclick="getGreeting()">Greet</button>
+      <p id="result" class="result" aria-live="polite"></p>
+    </section>
+  </main>
 
   <script>
     async function getGreeting() {
