@@ -33,7 +33,7 @@ jobs:
       - name: run tests
         run: npm test
 
-lint:
+  lint:
     runs-on: ${{ matrix.os }}
     needs: test
     strategy:
@@ -41,10 +41,10 @@ lint:
         os: [ubuntu-latest, windows-latest]
     steps:
       - name: checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: set up node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
