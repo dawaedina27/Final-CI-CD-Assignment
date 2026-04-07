@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:ci": "jest --runInBand",
     "start": "node main.js",
     "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
     "eslint": "^10.2.0",
@@ -18,6 +19,8 @@
     "supertest": "^7.2.2"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0"
   }
 }

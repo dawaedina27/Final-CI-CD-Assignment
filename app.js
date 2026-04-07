@@ -1,9 +1,31 @@
 const express = require('express');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
 // serve the static file (html)
+
+app.disable('x-powered-by');
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      'script-src': ['\'self\'', '\'unsafe-inline\''],
+      'style-src': ['\'self\'', '\'unsafe-inline\'', 'https://fonts.googleapis.com'],
+      'font-src': ['\'self\'', 'https://fonts.gstatic.com'],
+      'img-src': ['\'self\'', 'data:']
+    }
+  }
+}));
+
+const greetLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -12,7 +34,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/api/greet', (req, res) => {
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+app.get('/api/greet', greetLimiter, (req, res) => {
   const rawName = req.query.name || 'Guest';
   const tone = (req.query.tone || 'friendly').toString();
   const language = (req.query.language || 'en').toString();
