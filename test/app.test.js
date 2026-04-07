@@ -9,7 +9,7 @@ describe('GET /api/greet', () => {
   });
 
   it('should return personalized greeting', async () => {
-    const res = await request(app).get('/api/greet?name=Huseyin');
-    expect(res.body.message).toBe('Hello, Huseyin! Great to see you!');
+    const res = await request(app).get('/api/greet?name=Dawa');
+    expect(res.body.message).toBe('Hello, Dawa! Great to see you!');
   });
 });

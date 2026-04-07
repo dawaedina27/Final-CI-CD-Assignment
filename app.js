@@ -66,7 +66,7 @@ app.get('/api/greet', (req, res) => {
   const TONE_SUFFIXES = {
     friendly: 'Great to see you!',
     professional: 'How may I assist you today?',
-    playful: "Let's make today fun!",
+    playful: 'Let\'s make today fun!',
     grateful: 'Thanks for stopping by!'
   };
 
