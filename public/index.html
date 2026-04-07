@@ -12,27 +12,237 @@
 <body>
   <main class="page">
     <section class="card">
-      <p class="eyebrow">Say Hello</p>
-      <h1>Greeting App</h1>
-      <p class="subhead">Type a name and get an instant, friendly greeting.</p>
+      <div class="header">
+        <div>
+          <p class="eyebrow">Say Hello</p>
+          <h1>Greeting App</h1>
+          <p class="subhead">Personalized greetings with tone, language, and a quick history.</p>
+        </div>
+        <div id="status" class="status" data-state="ready">Ready</div>
+      </div>
 
       <div class="field">
         <label for="name">Your name</label>
-        <input id="name" placeholder="Enter your name" />
+        <input id="name" placeholder="Enter your name" autocomplete="name" />
+        <div class="meta">
+          <span id="count">0</span> characters
+          <span class="dot">•</span>
+          Last greeted: <span id="lastGreet">—</span>
+        </div>
       </div>
 
-      <button class="cta" onclick="getGreeting()">Greet</button>
+      <div class="options">
+        <div class="field compact">
+          <label for="tone">Tone</label>
+          <select id="tone">
+            <option value="friendly" selected>Friendly</option>
+            <option value="professional">Professional</option>
+            <option value="playful">Playful</option>
+            <option value="grateful">Grateful</option>
+          </select>
+        </div>
+        <div class="field compact">
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="en" selected>English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="sw">Swahili</option>
+            <option value="de">German</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toggles">
+        <label class="toggle">
+          <input id="includeTime" type="checkbox" checked />
+          Include time of day
+        </label>
+        <label class="toggle">
+          <input id="includeEmoji" type="checkbox" checked />
+          Include emoji
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="cta" id="greetBtn" type="button">Greet</button>
+        <button class="ghost" id="surpriseBtn" type="button">Surprise me</button>
+        <button class="ghost danger" id="clearBtn" type="button">Clear</button>
+      </div>
+
       <p id="result" class="result" aria-live="polite"></p>
+
+      <div class="history">
+        <div class="history-head">
+          <h2>Recent greetings</h2>
+          <button class="link" id="clearHistory" type="button">Clear history</button>
+        </div>
+        <ul id="historyList" class="history-list"></ul>
+      </div>
     </section>
   </main>
 
   <script>
-    async function getGreeting() {
-      const name = document.getElementById('name').value;
-      const res = await fetch(`/api/greet?name=${name}`);
-      const data = await res.json();
-      document.getElementById('result').innerText = data.message;
-    }
+    const nameInput = document.getElementById('name');
+    const result = document.getElementById('result');
+    const toneSelect = document.getElementById('tone');
+    const languageSelect = document.getElementById('language');
+    const includeTime = document.getElementById('includeTime');
+    const includeEmoji = document.getElementById('includeEmoji');
+    const greetBtn = document.getElementById('greetBtn');
+    const surpriseBtn = document.getElementById('surpriseBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const countEl = document.getElementById('count');
+    const lastGreetEl = document.getElementById('lastGreet');
+    const statusEl = document.getElementById('status');
+    const historyList = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistory');
+
+    const STORAGE_KEY = 'greetingHistory';
+    const SAMPLE_NAMES = ['Ari', 'Tasha', 'Noah', 'Ivy', 'Sam', 'Zuri', 'Leo', 'Nia'];
+
+    const updateCount = () => {
+      countEl.textContent = nameInput.value.length.toString();
+    };
+
+    const setStatus = (text, state = 'ready') => {
+      statusEl.textContent = text;
+      statusEl.dataset.state = state;
+    };
+
+    const setLastGreet = () => {
+      const now = new Date();
+      lastGreetEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const getHistory = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch (err) {
+        return [];
+      }
+    };
+
+    const saveHistory = (items) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    };
+
+    const renderHistory = () => {
+      const items = getHistory();
+      historyList.innerHTML = '';
+      if (!items.length) {
+        const empty = document.createElement('li');
+        empty.className = 'empty';
+        empty.textContent = 'No greetings yet. Generate one to see it here.';
+        historyList.appendChild(empty);
+        return;
+      }
+
+      items.forEach((item) => {
+        const li = document.createElement('li');
+        const msg = document.createElement('p');
+        msg.textContent = item.message;
+        const time = document.createElement('span');
+        time.textContent = item.time;
+        li.appendChild(msg);
+        li.appendChild(time);
+        historyList.appendChild(li);
+      });
+    };
+
+    const addHistory = (message) => {
+      const items = getHistory();
+      const now = new Date();
+      items.unshift({
+        message,
+        time: now.toLocaleString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      const trimmed = items.slice(0, 5);
+      saveHistory(trimmed);
+      renderHistory();
+    };
+
+    const setLoading = (isLoading) => {
+      greetBtn.disabled = isLoading;
+      surpriseBtn.disabled = isLoading;
+      clearBtn.disabled = isLoading;
+      if (isLoading) {
+        setStatus('Greeting...', 'loading');
+      }
+    };
+
+    const buildQuery = (name) => {
+      const params = new URLSearchParams({
+        name,
+        tone: toneSelect.value,
+        language: languageSelect.value,
+        time: includeTime.checked ? '1' : '0',
+        emoji: includeEmoji.checked ? '1' : '0'
+      });
+      return params.toString();
+    };
+
+    const getGreeting = async () => {
+      let name = nameInput.value.trim();
+      if (!name) {
+        name = 'Guest';
+        setStatus('Using Guest', 'warn');
+      }
+
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/greet?${buildQuery(name)}`);
+        if (!res.ok) {
+          throw new Error('Request failed');
+        }
+        const data = await res.json();
+        result.textContent = data.message;
+        setLastGreet();
+        addHistory(data.message);
+        setStatus('Done', 'success');
+      } catch (err) {
+        result.textContent = 'Unable to fetch a greeting. Please try again.';
+        setStatus('Error', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const surpriseMe = () => {
+      const pick = SAMPLE_NAMES[Math.floor(Math.random() * SAMPLE_NAMES.length)];
+      nameInput.value = pick;
+      updateCount();
+      getGreeting();
+    };
+
+    const clearAll = () => {
+      nameInput.value = '';
+      result.textContent = '';
+      updateCount();
+      lastGreetEl.textContent = '—';
+      setStatus('Ready');
+    };
+
+    const clearHistory = () => {
+      saveHistory([]);
+      renderHistory();
+    };
+
+    greetBtn.addEventListener('click', getGreeting);
+    surpriseBtn.addEventListener('click', surpriseMe);
+    clearBtn.addEventListener('click', clearAll);
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    nameInput.addEventListener('input', updateCount);
+    nameInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        getGreeting();
+      }
+    });
+
+    updateCount();
+    renderHistory();
   </script>
 </body>
 </html>

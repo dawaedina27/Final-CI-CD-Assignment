@@ -44,6 +44,14 @@ body {
   animation: floatIn 600ms ease-out;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
 .eyebrow {
   font-family: "Space Grotesk", sans-serif;
   letter-spacing: 0.2em;
@@ -71,12 +79,17 @@ h1 {
   margin-bottom: 16px;
 }
 
+.field.compact {
+  margin-bottom: 0;
+}
+
 label {
   font-size: 0.9rem;
   color: var(--muted);
 }
 
-input {
+input,
+select {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -87,9 +100,98 @@ input {
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
 
-input:focus {
+select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.6) 50%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.6) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 40px;
+}
+
+select option {
+  color: #1b223a;
+  background: #f2f4f8;
+}
+
+input:focus,
+select:focus {
   border-color: rgba(244, 162, 97, 0.7);
   box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.2);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.dot {
+  opacity: 0.5;
+}
+
+.status {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.status[data-state="loading"] {
+  color: var(--accent);
+}
+
+.status[data-state="success"] {
+  color: var(--accent-2);
+}
+
+.status[data-state="error"] {
+  color: #ffb3b3;
+}
+
+.status[data-state="warn"] {
+  color: #f6c87a;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-bottom: 20px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.toggle input {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .cta {
@@ -109,11 +211,108 @@ input:focus {
   box-shadow: 0 8px 18px rgba(244, 162, 97, 0.35);
 }
 
+.cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 200ms ease, transform 120ms ease;
+}
+
+.ghost:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.ghost:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ghost.danger {
+  color: #ffb3b3;
+}
+
+.link {
+  background: none;
+  border: none;
+  color: var(--accent-2);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
 .result {
   margin-top: 18px;
   font-size: 1.1rem;
   color: var(--accent);
   min-height: 1.4em;
+}
+
+.history {
+  margin-top: 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.history h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.history-list li {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-list li p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.history-list li span {
+  font-size: 0.8rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.history-list li.empty {
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 @keyframes floatIn {
@@ -130,5 +329,14 @@ input:focus {
 @media (max-width: 560px) {
   .card {
     padding: 28px 22px;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .history-list li {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
