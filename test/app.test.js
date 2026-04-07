@@ -5,11 +5,11 @@ describe('GET /api/greet', () => {
   it('should return default greeting', async () => {
     const res = await request(app).get('/api/greet');
     expect(res.statusCode).toBe(200);
-    expect(res.body.message).toBe('Hello, Guest!');
+    expect(res.body.message).toBe('Hello, Guest! Great to see you!');
   });
 
   it('should return personalized greeting', async () => {
     const res = await request(app).get('/api/greet?name=Huseyin');
-    expect(res.body.message).toBe('Hello, Huseyin!');
+    expect(res.body.message).toBe('Hello, Huseyin! Great to see you!');
   });
 });
